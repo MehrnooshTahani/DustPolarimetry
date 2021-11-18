@@ -1,5 +1,7 @@
 __author__ = 'Mehrnoosh Tahani; based on a code from Kate Pattle and a function from Susan Clark'
+
 '''IMPORTNAT NOTE: LIC first needs to be installed: pip install licpy'''
+
 import numpy as np
 from reproject import reproject_interp
 from licpy.lic import runlic
