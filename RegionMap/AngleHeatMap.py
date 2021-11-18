@@ -72,17 +72,10 @@ BAngleRotated = Anglesdt+90
 # Apply the selection criteria
 BAngleRotated[isdt/iedt<=I_cutoff]=np.nan
 BAngleRotated[Pisdt/Piedt<=PI_cutoff]=np.nan
-# ~~~~~~~~~~~~~~~~~~~~~~~~ End of All Stokes HDU~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~ All Stokes HDU~~~~~~~~~~~~~~~~~~~~~~~.
 
-# Define an area to plot
-position = SkyCoord(ifhd['CRVAL1'], ifhd['CRVAL2'], frame=ifhd['RADESYS'].lower(), unit='deg')
-rahmsstr = position.ra.to_string(u.hour)
-decdmsstr = position.dec.to_string(u.degree, alwayssign=True)
-
-# ~~~~~~~~~ Adding the bubbles ~~~~~~~~~~
-
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Creating Fig ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 fig = plt.figure(facecolor='w', figsize=(12, 10), dpi=100)
-
 gs = gridspec.GridSpec(1,2, height_ratios=[1], width_ratios=[1,0.05])
 gs.update(left=0.16, right=0.76, bottom=0.08, top=0.93, wspace=0.0, hspace=0.0)
 plt.rcParams['axes.titlesize'] = 25
@@ -99,9 +92,7 @@ lat.set_ticklabel(size=18)
 lon.set_major_formatter('hh:mm:ss')
 lat.set_major_formatter('dd:mm:ss')
 lon.set_separator(('h', "m", 's'))
-# ax.set_xlim(px_nec, px_swc) # R.A. range from north-EAST to south-WEST
-# ax.set_ylim(py_nec, py_swc) # Dec. range from SOUTH-west to NORTH-east
-ax.set_xlim(50,345) # R.A. range from north-EAST to south-WEST
+ax.set_xlim(50,345)
 ax.set_ylim(10, 375)
 # Tick/label spacing and properties
 lon.set_ticks(spacing=60 * u.arcsec, color='black', exclude_overlapping=True)
@@ -119,13 +110,12 @@ lat.set_ticklabel_position('l')
 lat.set_axislabel_position('l')
 
 im = ax.imshow(BAngleRotated, cmap=plt.cm.seismic, aspect='equal')#gist_yarg
-
 # Color bar
-cbax = plt.subplot(gs[0,1]) # Place it where it should be defined by GRIDSPEC.
+cbax = plt.subplot(gs[0,1])
 cb = plt.colorbar(cax=cbax, mappable=im, orientation='vertical', ticklocation='right')
 cb.ax.tick_params(labelsize=18) #  Fontsize of colorbar values
 cb.set_label(r'Magnetic field angle [$^{\circ}$]', fontsize=18, labelpad=18)
-
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Creating Fig ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~.
 
 # plt.savefig(saveFilePath, dpi=90, facecolor=fig.get_facecolor(), edgecolor='none', bbox_inches='tight')
 plt.show()
