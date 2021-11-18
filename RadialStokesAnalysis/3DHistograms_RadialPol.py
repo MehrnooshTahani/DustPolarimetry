@@ -17,7 +17,10 @@ import matplotlib.ticker as ticker
 parentDir = os.path.abspath(os.path.dirname(os.getcwd()))
 dataDir = os.path.join(parentDir, 'Data/')
 outDir = os.path.join(parentDir, 'Output/')
-SaveFileDirectory = os.path.join(outDir, '3D/')
+Dirs = os.walk(parentDir)
+if 'threeD' not in parentDir:
+    os.mkdir(os.path.join(dataDir, 'threeD'))
+SaveFileDirectory = os.path.join(outDir, 'threeD/')
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~.
 # ~~~~~~~~~ Selection Criteria ~~~~~~~~~~~
 StokesI_cutoff = 10.
