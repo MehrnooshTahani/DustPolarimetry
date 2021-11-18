@@ -110,8 +110,6 @@ PI_cutoff = 3
 iext_name = 'iextN633MO808YYNN.fit'
 Qext_name = 'qextN633MO808YYNN.fit'
 Uext_name = 'uextN633MO808YYNN.fit'
-Piext_name = 'piextN633MO808YYNN.fit'
-PFext_name = 'pfextN633MO808YYNN.fit'
 # Stokes I
 iext_hdulist = fits.open(dataDir + iext_name)
 isdt = iext_hdulist['PRIMARY', 1].data[0]
