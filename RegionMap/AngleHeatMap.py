@@ -10,9 +10,11 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec # GRIDSPEC !
 
 # ~~~~~~~~~ File Paths ~~~~~~~~~
-currentDir = os.path.abspath(os.getcwd())
-dataDir = os.path.join(currentDir, 'Data/')
-outDir = os.path.join(currentDir, 'Output/')
+'''If you use the code as it is, you just need to put your fits file in the Data directory.
+The next 3 lines read the path.'''
+parentDir = os.path.abspath(os.path.dirname(os.getcwd()))
+dataDir = os.path.join(parentDir, 'Data/')
+outDir = os.path.join(parentDir, 'Output/')
 saveFilePath = os.path.join(outDir, 'AngleHeatMap.pdf')
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~.
 # ~~~~~~~~~ Cutoff values ~~~~~~~~~
