@@ -4,6 +4,7 @@ import os, sys, subprocess, shlex, glob, json
 import numpy as np
 from astropy.io import fits
 from astropy.wcs import WCS
+import statistics as st
 
 class RadialParam:
     def __init__(self, Dir, cx, cy, rx, tx, i_CutOff, pi_cutOff):
@@ -92,6 +93,10 @@ class RadialParam:
             Q_rNormalized = 0 ; Q_rTemp = 0
             U_rNormalized = 0 ; U_rTemp = 0
             locals()['PolAngInRing{}'.format(radiusIndex + 1)] = []
+            locals()['PFValuesInRing{}'.format(radiusIndex+1)] = []
+            locals()['PIValuesInRing{}'.format(radiusIndex+1)] = []
+            locals()['Q_rValuesInRing{}'.format(radiusIndex+1)] = []
+            locals()['U_rValuesInRing{}'.format(radiusIndex+1)] = []
             N = 0.
             # ~~ Go in loop  for each pixel to find the rings ~~~
             for xIndex in range(len(self.isdtCl[0,:])):
@@ -109,12 +114,30 @@ class RadialParam:
                                 U_rTemp = -QsdtCl[yIndex, xIndex]*np.sin(2*pfi) + UsdtCl[yIndex, xIndex]*np.cos(2*pfi)
                                 Angel_temp = np.degrees(0.5*np.arctan2(U_rTemp, Q_rTemp))
                                 locals()['PolAngInRing{}'.format(radiusIndex + 1)].append(np.degrees(0.5*np.arctan2(U_rTemp, Q_rTemp)))
+                                locals()['PFValuesInRing{}'.format(radiusIndex+1)].append(PFsdtCl[yIndex, xIndex])
+                                locals()['PIValuesInRing{}'.format(radiusIndex+1)].append(PisdtCl[yIndex, xIndex])
+                                locals()['Q_rValuesInRing{}'.format(radiusIndex + 1)].append(Q_rTemp)
+                                locals()['U_rValuesInRing{}'.format(radiusIndex + 1)].append(U_rTemp)
                                 N = N + 1
             # Finally before going to next ring, store information and find averages.
             if N > 0:
                 self.N_r.append(N)
                 self.radius.append((2*radiusIndex+1)*3.999999)#3.999999 is to convert it to arcsec for 8'' maps
+                self.Pf_rAvg.append((st.mean(locals()['PFValuesInRing{}'.format(radiusIndex+1)])))
+                self.PI_rAVG.append((st.mean(locals()['PIValuesInRing{}'.format(radiusIndex+1)])))
+                self.Pf_rStdev.append((st.stdev(locals()['PFValuesInRing{}'.format(radiusIndex+1)]))/np.sqrt(N-1))
+                self.PI_rStdev.append((st.stdev(locals()['PIValuesInRing{}'.format(radiusIndex+1)]))/np.sqrt(N-1))
+                self.Q_rAVG.append((st.mean(locals()['Q_rValuesInRing{}'.format(radiusIndex+1)])))
+                self.U_rAVG.append((st.mean(locals()['U_rValuesInRing{}'.format(radiusIndex+1)])))
+                self.Q_rStdev.append((st.stdev(locals()['Q_rValuesInRing{}'.format(radiusIndex+1)]))/np.sqrt(N-1))
+                self.U_rStdev.append((st.stdev(locals()['U_rValuesInRing{}'.format(radiusIndex+1)]))/np.sqrt(N-1))
             for idx, binVal in enumerate(self.angleBin):
                 for angelIdx, angelVal in enumerate(locals()['PolAngInRing{}'.format(radiusIndex + 1)]):
                     if (binVal - (binWidth/2)) <= angelVal < (binVal + (binWidth/2)):
                         self.pixelinEachAngleBin[idx, radiusIndex] = self.pixelinEachAngleBin[idx, radiusIndex]+1
+
+
+
+
+
+

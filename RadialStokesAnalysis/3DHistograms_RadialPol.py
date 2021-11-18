@@ -60,8 +60,6 @@ def plotandSave(pixels, angleBin, radius, bubbleNumber, directory):
     plt.savefig(saveFilePath, dpi=90, facecolor=fig.get_facecolor(), edgecolor='none')
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~.
 
-# ~~~~Class to mask regions and find rings for each bubble~~~~
-
 # ~~~~Find the bubbles info~~~~~~~~~.
 bubbles = BubbleShortenedPicked(wcs)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~.
