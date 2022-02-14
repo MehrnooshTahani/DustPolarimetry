@@ -17,6 +17,8 @@ from astropy.io import fits
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 from astropy.nddata import Cutout2D
+import scipy.ndimage as ndimage
+import matplotlib.lines as mlines
 
 #~~~~~~~~~~~~~LIC Function ~~~~~~~~~~~~~~~~~~~~
 def lic_plot(lic_data, background_data=None, F_m=0.0, F_M=0.0, cmap="YlOrRd"):
@@ -174,6 +176,29 @@ lon.set_axislabel_position('b')
 lat.set_ticks_position('l') # left or right, if both 'lr'
 lat.set_ticklabel_position('l')
 lat.set_axislabel_position('l')
+
+#Ploting the B lines
+ConvertCoordAngle = []
+rotate = 90 # rotating e vectors to get b vectors
+step = 10 # show lines for every 10 steps
+scale = 1.5 #length of the lines
+p_lenx =  QMap.shape[1] #length of the x axis in pixels
+p_leny =  QMap.shape[0] #length of the y axis in pixels
+data_p = [ [1]*len(QMap[0]) for i in range(len(QMap)) ] #magnitude of the vectors = choosing length of 1, you can change this to make it equal to the polarization fraction for each point
+data_a = np.degrees( 0.5 * np.arctan2( UMap , QMap  ) )  # angle of the vectors in degrees
+
+for y in range(0, p_leny, step):
+    for x in range(0, p_lenx, step):
+        r = data_p[y][x] * scale
+        a = np.radians(data_a[y][x] + rotate)
+        x1 = x + r * np.sin(a)
+        y1 = y - r * np.cos(a)
+        x2 = x - r * np.sin(a)
+        y2 = y + r * np.cos(a)
+        # Add the lines:
+        l = mlines.Line2D([x1, x2], [y1, y2], color='yellow',linewidth=2, zorder=2, alpha = 0.6)
+        ax.add_line(l)
+
 # saveFilePath = outDir + 'NGC6334LIC.pdf'
 # plt.savefig(saveFilePath, dpi=90, facecolor=fig.get_facecolor(), edgecolor='none')
 plt.show()
