@@ -186,7 +186,7 @@ p_lenx =  QMap.shape[1] #length of the x axis in pixels
 p_leny =  QMap.shape[0] #length of the y axis in pixels
 data_p = [ [1]*len(QMap[0]) for i in range(len(QMap)) ] #magnitude of the vectors = choosing length of 1, you can change this to make it equal to the polarization fraction for each point
 data_a = np.degrees( 0.5 * np.arctan2( UMap , QMap  ) )  # angle of the vectors in degrees
-
+# Loop to add line by line
 for y in range(0, p_leny, step):
     for x in range(0, p_lenx, step):
         r = data_p[y][x] * scale
