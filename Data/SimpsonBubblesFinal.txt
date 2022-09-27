@@ -1,0 +1,7 @@
+0:Name    1:OtherName   2:Long(deg)   3:Lat(deg)    4:InnerXDiameter(arcmin)	5:InnerYDiameter(arcmin)	6:OuterXdiameter(arcmin)	7:R_eff(arcmin)	8:Thick_eff(arcmin)   9:Ellipse_Eccentricity    10:Ellipse_position_Angle(from_vertical_of_Y_axis;deg)	11:Hit	12:Dispersion_on_position(arcmin)	13:Flag    14:RA(deg)	15:Dec(deg)
+Name    OtherName   Long(d)   Lat(d)    InnXDia	InYDia	OutXDia	R_eff	Thik_eff	Ecc PA(d)  Hit	Disp(min) Flag	RA(deg)	DEc(deg)
+1G351418+006431 'NA'    351.418 0.643   0.728	  0.730	 1.335	 0.49	 0.61	 0.068	 10	 0.22	 0.001  0   260.2254	-35.7840
+1G351371+006370 'CS85'  351.371 0.637   2.212	  2.262	 3.676	 1.44	 1.46	 0.208	 33	 0.16	 0.025	1  	260.1985	-35.8261
+1G351426+006596 'NA'    351.426 0.660   0.630	  0.871	 1.240	 0.50	 0.61	 0.691	 97	 0.16	 0.002  0   260.2139	-35.7678
+1G351224+006647 'NA'    351.224 0.665   1.936	  1.986	 3.574	 1.33	 1.64	 0.222	 37	 0.11	 0.011  0   260.0665	-35.9307
+1G351335+006161 'NA'    351.335 0.616   0.497	  0.520	 1.382	 0.42	 0.88	 0.291	  4	 0.10	 0.003	2  	260.1944	-35.8676

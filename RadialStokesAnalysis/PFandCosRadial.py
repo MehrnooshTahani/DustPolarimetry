@@ -1,18 +1,11 @@
 __author__ = 'Mehrnoosh Tahani'
 # Created at 2020-06-26
 
-import os, sys, subprocess, shlex, glob, json
+import os
 import numpy as np
-import astropy.units as u
 from astropy.io import fits
 from astropy.wcs import WCS
-import astropy as ast
-from astropy.coordinates import SkyCoord
 import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
-import matplotlib as mpl
-from matplotlib import cm
-import statistics as st
 import matplotlib.ticker as ticker
 from scipy.interpolate import UnivariateSpline
 from Classes.RadialPatternFinding import RadialParam
@@ -23,7 +16,7 @@ from Classes.BubblesCircleShortened import BubbleShortenedPicked
 parentDir = os.path.abspath(os.path.dirname(os.getcwd()))
 dataDir = os.path.join(parentDir, 'Data/')
 outDir = os.path.join(parentDir, 'Output/')
-SaveFileDirectory = os.path.join(outDir, 'QrUr/')
+SaveFileDirectory = os.path.join(outDir, 'FinalCos/')
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~.
 # ~~~~~~~~~ Cutoff values ~~~~~~~~~
 StokesI_cutoff = 10.
@@ -33,43 +26,41 @@ PolarizationI_cutoff = 3.
 # Plot Specs
 xmin,xmax, xmin2 = 0, 100, 0
 tickLocator = 20 #you can define these as dynamic variables
-def plotandSave(qrFunc, urFunc, radius, qrFuncStdev, urFuncStdev, nCount, bubbleNumber, cx, cy, r, tx, directory):
+def plotandSave(angFunc, PFFunc, radius, angFuncStdev, PFFuncStdev, nCount, bubbleNumber, cx, cy, r, tx, directory, name):
     # ~~~~~~~~~~~Xmin and Xmax~~~~~~ (non-efficient coding for now)
     # ~~~~~~~~~~end of xmin and xmax ~~~~~~~~~
-    saveFilePath = directory + 'Bubble' + str(bubbleNumber) + 'QURadialNoI.pdf'
+    saveFilePath = directory + 'Bubble' + str(bubbleNumber) + 'PFCosRadialAngle.pdf'
     fig, ax1 = plt.subplots(figsize=(8,6))
+    plt.gcf().subplots_adjust(right=0.8, left=0.15)
     ax2 = ax1.twinx()
-    ax1.set_ylabel(r'<Q$_r$> or <U$_r$> (mJy/beam)', fontsize=18, labelpad=-6)
-    ax1.set_xlabel('radius (arc-second)', fontsize=18, labelpad=7)
+    ax3 = ax1.twinx()
+    ax1.set_ylabel(r'$\cos(\theta_r)$', fontsize=19, labelpad=0)
+    ax1.set_xlabel('radius [arc-second]', fontsize=19, labelpad=7)
     ax1.xaxis.set_major_locator(ticker.MultipleLocator(tickLocator))
-    # plt.title('SNR(I)>'+str(StokesI_cutoff) +', SNR(PI)> '+str(PolarizationI_cutoff)+ 'Bubble ' + str(bubbleNumber) , fontsize=14)
-    # For NO PI selection Criteria
-    # plt.title('SNR(I)>'+str(StokesI_cutoff) +', No SNR(PI), Bubble ' + str(bubbleNumber) +'\n', linespacing =1 , fontsize=14)
+    ax1.tick_params(axis='both', which='major', labelsize=14)
     plt.title('Bubble ' + str(bubbleNumber)  , fontsize=18)
     ax2.set_ylabel('Number of pixels', fontsize=14, color='black', labelpad=-3)
-    # ax1.plot(radius, qrFunc, color='green', marker='o', label= r'<Q$_r$>', markersize=4)
-    forLeg1 = ax1.errorbar(radius, qrFunc, yerr=qrFuncStdev, color='blue', marker='o', ls='none',label=r'<Q$_r$>', markersize = 6)
-    # ax1.plot(radius, urFunc, color='red', marker='s', label= r'<U$_r$>', markersize=4)
-    forLeg2 = ax1.errorbar(radius, urFunc, yerr=urFuncStdev, color='red', marker='o', ls='none',label=r'<Q$_r$>', markersize = 6, alpha = 0.5)
-    ax1.set_ylim(-25,25)
+    ax2.set_ylim(0, 205)
+    ax3.set_ylim(0, 18)
+    ax3.set_ylabel(r'<Polarization Fraction> (%)', fontsize=15, color='black', labelpad=0.5)
+    ax2.spines["right"].set_position(("axes", 1.1))
+    forLeg1 = ax1.errorbar(radius, angFunc, yerr=angFuncStdev, color='blue', marker='o', ls='none',label=r'<Q$_r$>', markersize = 6)
     ax1.set_xlim(xmin,xmax)
-    ax1.tick_params(labelsize=12)
-    plt.yticks(fontsize=12)
+    ax1.set_ylim(-0.05,1.05)
+    ax1.axhline(y=0.95, label='bubble radius', ls ='--', c = 'black', alpha = 0.6)
     ax1.axvline(x=r*3.999999, label='bubble radius', ls ='--', c = 'black')
     # For Simpson bubbles we have thickness as well:
     forLeg3 = ax2.scatter(radius, nCount,color='black', marker='x', label = 'Pixels', s = 14)
-    # ax1.legend(bbox_to_anchor=(-0.34, .4, 0.6, 0.6))
-    # plt.savefig(saveFilePath, facecolor=fig.get_facecolor(), edgecolor='none')
-    plt.legend((forLeg1, forLeg2, forLeg3), (r'<Q$_r$>', r'<U$_r$>', 'Total Pixels'), loc=[0.02, 0.81])
-    spl = UnivariateSpline(radius, qrFunc)
-    spl2 = UnivariateSpline(radius, urFunc)
-    xs = np.linspace(xmin2, xmax, xmax-xmin2)
-    yu = np.zeros(len(radius))
-    ax1.plot(xs, spl(xs), lw=1.2, linestyle='--', color='blue', alpha = 0.5)
-    # ax1.plot(xs, yu, lw=1.2, linestyle = '-.', color='red', alpha = 0.4)
-    ax1.plot(radius, yu, lw=1.2, linestyle='-.', color='red', alpha=0.4)
-    plt.savefig(saveFilePath, dpi=90, facecolor=fig.get_facecolor(), edgecolor='none')
-    # plt.show()
+    forLeg4 = ax3.errorbar(radius, PFFunc, yerr=PFFuncStdev, color='red', marker='o', ls='none',label=r'<Q$_r$>', markersize = 6)
+    leg= plt.legend((forLeg1, forLeg4, forLeg3), (r'$\cos{(\theta_r)}$', r'<PF>', r'total pixels'), title = r"  $\bf{Bubble~" + name + "}$", loc=[0.02, 0.02], fontsize = 'x-large')
+    leg._legend_box.align = "left"
+    # leg.get_frame().set_alpha(0.5)
+    leg.get_frame().set_facecolor((1, 1, 1, 0.5))
+    leg.get_frame().set_edgecolor((0,0,0, 0.8))
+    leg.get_title().set_fontsize('14')
+    plt.tight_layout()
+    # plt.savefig(saveFilePath, dpi=90, facecolor=fig.get_facecolor(), edgecolor='none')
+    plt.show()
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~.
 # ~~~~~~~~~~ Header and WCS ~~~~~~~
 ifits_name = os.path.join(dataDir, 'iextN633MO808YYNN.fit')
@@ -88,6 +79,6 @@ for bubbleIndex in range(len(bubbles.RegionRA)):
     bubbleNumber = bubbleIndex + 1
     if bubbleNumber !=11 and bubbleNumber !=12 and bubbleNumber !=13 and bubbleNumber !=2:
         maskedRegion = RadialParam(dataDir, bubbles.RegionX[bubbleIndex], bubbles.RegionY[bubbleIndex], bubbles.RegionRadius[bubbleIndex], bubbles.RegionThickinArcSec[bubbleIndex], StokesI_cutoff, PolarizationI_cutoff)
-        plot = plotandSave(maskedRegion.pixelinEachAngleBin, maskedRegion.angleBin, maskedRegion.radius, bubbleNumber, SaveFileDirectory)
+        plot = plotandSave(maskedRegion.cosAvgAfterAveg, maskedRegion.Pf_rAvg, maskedRegion.radius, maskedRegion.cosAvgAfterAveg_Stdev, maskedRegion.Pf_rStdev, maskedRegion.N_r, bubbleNumber, bubbles.RegionX[bubbleIndex], bubbles.RegionY[bubbleIndex], bubbles.RegionRadius[bubbleIndex], bubbles.RegionThickinArcSec[bubbleIndex], SaveFileDirectory)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~.
 

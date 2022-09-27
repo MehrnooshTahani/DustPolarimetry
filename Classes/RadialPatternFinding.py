@@ -86,6 +86,10 @@ class RadialParam:
         self.AngleStdev = []
         self.angleBin = np.arange(-80, 100, binWidth)
         self.pixelinEachAngleBin = np.zeros([self.angleBin.shape[0], int(rx)])
+        self.cosAVG = []
+        self.cosStdev = []
+        self.cosAvgAfterAveg = []
+        self.cosAvgAfterAveg_Stdev = []
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~.
         # ~~loop for pixels in rings around bubble ~~~.
         for radiusIndex in range(int(rx)):
@@ -131,6 +135,25 @@ class RadialParam:
                 self.U_rAVG.append((st.mean(locals()['U_rValuesInRing{}'.format(radiusIndex+1)])))
                 self.Q_rStdev.append((st.stdev(locals()['Q_rValuesInRing{}'.format(radiusIndex+1)]))/np.sqrt(N-1))
                 self.U_rStdev.append((st.stdev(locals()['U_rValuesInRing{}'.format(radiusIndex+1)]))/np.sqrt(N-1))
+                self.AngleAvg.append(st.mean(locals()['PolAngInRing{}'.format(radiusIndex + 1)]))
+                self.AngleStdev.append(st.stdev(locals()['PolAngInRing{}'.format(radiusIndex + 1)]))
+                self.cosAVG.append(st.mean(locals()['PolCosInRing{}'.format(radiusIndex + 1)]))
+                self.cosStdev.append((st.stdev(locals()['PolCosInRing{}'.format(radiusIndex + 1)]))/(np.sqrt(N-1)))
+                AngleAfterAvged = 0.5 * np.arctan2((st.mean(locals()['U_rValuesInRing{}'.format(radiusIndex+1)])), (st.mean(locals()['Q_rValuesInRing{}'.format(radiusIndex+1)])))
+                self.cosAvgAfterAveg.append(np.cos(AngleAfterAvged))
+                Q_rAvgTemp = st.mean(locals()['Q_rValuesInRing{}'.format(radiusIndex + 1)])
+                U_rAvgTemp = st.mean(locals()['U_rValuesInRing{}'.format(radiusIndex + 1)])
+                Q_rStdevTemp = (st.stdev(locals()['Q_rValuesInRing{}'.format(radiusIndex + 1)])) / np.sqrt(N - 1)
+                U_rStdevTemp = (st.stdev(locals()['U_rValuesInRing{}'.format(radiusIndex + 1)])) / np.sqrt(N - 1)
+                # ~~~~~~~~~~~~ For error calc of Cos ~~~~~~
+                Func = np.cos(AngleAfterAvged)
+                A = (1/(1+(U_rAvgTemp/Q_rAvgTemp)**2) )* (1/Q_rAvgTemp)
+                dfunc_dU = -0.5*np.sin(AngleAfterAvged)*A
+                dfunc_dQ = 0.5*np.sin(AngleAfterAvged)*A * (U_rAvgTemp/Q_rAvgTemp)
+                # delta_Fun = Func * (np.sqrt(((dfunc_dQ)*(Q_rStdevTemp))**2 + ((dfunc_dU)*(U_rStdevTemp))**2))
+                delta_Fun = (np.sqrt(((dfunc_dQ)*(Q_rStdevTemp))**2 + ((dfunc_dU)*(U_rStdevTemp))**2))
+                # ~~~~~~~~~~~~ For error calc of Cos ~~~~~~.
+                self.cosAvgAfterAveg_Stdev.append(delta_Fun)
             for idx, binVal in enumerate(self.angleBin):
                 for angelIdx, angelVal in enumerate(locals()['PolAngInRing{}'.format(radiusIndex + 1)]):
                     if (binVal - (binWidth/2)) <= angelVal < (binVal + (binWidth/2)):
