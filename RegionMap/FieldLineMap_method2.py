@@ -1,4 +1,4 @@
-__author__ = 'Mehrnoosh Tahani; also using original code by Ray Furuya'
+__author__ = 'Mehrnoosh Tahani'
 
 import os, sys, subprocess, shlex, glob, json
 import numpy as np
